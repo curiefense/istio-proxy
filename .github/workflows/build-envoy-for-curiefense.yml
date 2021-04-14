@@ -33,7 +33,7 @@ jobs:
           chmod 755 cf-out/envoy
           echo -en 'FROM scratch\nCOPY envoy /envoy' > cf-out/Dockerfile
           strip cf-out/envoy
-          objdump -T cf-out/envoy
+          objdump -T cf-out/envoy |grep lua_checkstack
           cd cf-out
           docker build -t curiefense/envoy-istio-cf:$GITHUB_SHA .
       - name: Push the image
