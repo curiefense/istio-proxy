@@ -54,6 +54,7 @@ http_archive(
     sha256 = ENVOY_SHA256,
     strip_prefix = ENVOY_REPO + "-" + ENVOY_SHA,
     url = "https://github.com/" + ENVOY_ORG + "/" + ENVOY_REPO + "/archive/" + ENVOY_SHA + ".tar.gz",
+    patches = ["@//:15471.patch"],
 )
 
 load("@envoy//bazel:api_binding.bzl", "envoy_api_binding")

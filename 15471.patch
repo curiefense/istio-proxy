@@ -1,0 +1,14 @@
+diff --git source/extensions/filters/common/lua/lua.cc source/extensions/filters/common/lua/lua.cc
+index a5b1f76e81ed..c2e5d60c53af 100644
+--- source/extensions/filters/common/lua/lua.cc
++++ source/extensions/filters/common/lua/lua.cc
+@@ -44,6 +44,9 @@ void Coroutine::resume(int num_args, const std::function<void()>& yield_callback
+   } else {
+     state_ = State::Finished;
+     const char* error = lua_tostring(coroutine_state_.get(), -1);
++    if (!error) {
++      error = "unspecified lua error";
++    }
+     throw LuaException(error);
+   }
+ }
