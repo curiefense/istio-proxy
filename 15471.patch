@@ -1,13 +1,29 @@
 diff --git source/extensions/filters/common/lua/lua.cc source/extensions/filters/common/lua/lua.cc
-index a5b1f76e81ed..c2e5d60c53af 100644
+index a5b1f76e8..1854504a0 100644
 --- source/extensions/filters/common/lua/lua.cc
 +++ source/extensions/filters/common/lua/lua.cc
-@@ -44,6 +44,9 @@ void Coroutine::resume(int num_args, const std::function<void()>& yield_callback
+@@ -44,6 +44,25 @@ void Coroutine::resume(int num_args, const std::function<void()>& yield_callback
    } else {
      state_ = State::Finished;
      const char* error = lua_tostring(coroutine_state_.get(), -1);
 +    if (!error) {
-+      error = "unspecified lua error";
++      error = "Unspecified lua error";
++    }
++    lua_getfield(L, LUA_GLOBALSINDEX, "debug");
++    if (lua_istable(L, -1)) {
++      lua_getfield(L, -1, "traceback");
++      if (lua_isfunction(L, -1)) {
++          lua_pushstring(L, error);  /* pass error message */
++          lua_pushinteger(L, 0);  /* use 2 to skip this function and traceback */
++          lua_call(L, 2, 1);  /* call debug.traceback */
++          const char *tb = lua_tostring(L, -1);
++          if (!tb) { tb = "traceback failed"; }
++          ENVOY_LOG(error, tb);
++      } else {
++        lua_pop(L, 2);
++     }
++    } else {
++        lua_pop(L, 1);
 +    }
      throw LuaException(error);
    }
