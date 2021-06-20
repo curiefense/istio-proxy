@@ -34,6 +34,8 @@ jobs:
           echo -en 'FROM scratch\nCOPY envoy /envoy' > cf-out/Dockerfile
           strip cf-out/envoy
           objdump -T cf-out/envoy |grep lua_checkstack
+          strings cf-out/envoy |grep -i "unspecified lua error"
+          strings cf-out/envoy |grep -i "traceback failed"
           cd cf-out
           docker build -t curiefense/envoy-istio-cf:$GITHUB_SHA .
       - name: Push the image
