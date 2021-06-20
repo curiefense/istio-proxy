@@ -24,6 +24,7 @@ jobs:
       - name: Build envoy binary for istio with exposed symbols
         run: |
           sed -i -e '/action_env=BAZEL_LINKOPTS=-lm$/s/$/:-Wl,-E/' envoy.bazelrc
+          rm -rf cf-out/
           mkdir -p cf-out
           chmod 755 cf-out/
           # docker image is specified in https://github.com/istio/proxy/blob/1.9.3/envoy.bazelrc
