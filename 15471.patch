@@ -1,13 +1,25 @@
-diff --git source/extensions/filters/common/lua/lua.cc source/extensions/filters/common/lua/lua.cc
-index a5b1f76e8..1854504a0 100644
+diff --git a/source/extensions/filters/common/lua/lua.cc b/source/extensions/filters/common/lua/lua.cc
+index d39951036..6c6b7e1fc 100644
 --- source/extensions/filters/common/lua/lua.cc
 +++ source/extensions/filters/common/lua/lua.cc
-@@ -44,6 +44,25 @@ void Coroutine::resume(int num_args, const std::function<void()>& yield_callback
+@@ -32,7 +32,8 @@ void Coroutine::start(int function_ref, int num_args, const std::function<void()
+ 
+ void Coroutine::resume(int num_args, const std::function<void()>& yield_callback) {
+   ASSERT(state_ == State::Yielded);
+-  int rc = lua_resume(coroutine_state_.get(), num_args);
++  lua_State *L = coroutine_state_.get();
++  int rc = lua_resume(L, num_args);
+ 
+   if (0 == rc) {
+     state_ = State::Finished;
+@@ -43,7 +44,26 @@ void Coroutine::resume(int num_args, const std::function<void()>& yield_callback
+     yield_callback();
    } else {
      state_ = State::Finished;
-     const char* error = lua_tostring(coroutine_state_.get(), -1);
+-    const char* error = lua_tostring(coroutine_state_.get(), -1);
++    const char* error = lua_tostring(L, -1);
 +    if (!error) {
-+      error = "Unspecified lua error";
++      error = "unspecified lua error";
 +    }
 +    lua_getfield(L, LUA_GLOBALSINDEX, "debug");
 +    if (lua_istable(L, -1)) {
